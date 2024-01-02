@@ -154,16 +154,16 @@ export class Mat4x4 extends Float32Array {
         return m;
     }
 
-    public static lookAt(eye: Vec3, target: Vec3, up: Vec3): Mat4x4 {
+    public static view(eye: Vec3, target: Vec3, up: Vec3): Mat4x4 {
         const zAxis = Vec3.normalize(Vec3.subtract(eye, target));
         const xAxis = Vec3.normalize(Vec3.cross(up, zAxis));
         const yAxis = Vec3.cross(zAxis, xAxis);
 
         const m = new Mat4x4();
         m.set([
-            xAxis.x, yAxis.x, zAxis.x, 0,
-            xAxis.y, yAxis.y, zAxis.y, 0,
-            xAxis.z, yAxis.z, zAxis.z, 0,
+            xAxis.x,         yAxis.x,         zAxis.x,         0,
+            xAxis.y,         yAxis.y,         zAxis.y,         0,
+            xAxis.z,         yAxis.z,         zAxis.z,         0,
             -xAxis.dot(eye), -yAxis.dot(eye), -zAxis.dot(eye), 1
         ]);
         return m;

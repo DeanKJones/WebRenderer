@@ -71,4 +71,11 @@ export class Vec3 extends Float32Array {
         const length = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
         return new Vec3(v.x / length, v.y / length, v.z / length);
     }
+
+    public static distance(v1: Vec3, v2: Vec3): number {
+        const x = v1.x - v2.x;
+        const y = v1.y - v2.y;
+        const z = v1.z - v2.z;
+        return Math.sqrt(x * x + y * y + z * z);
+    }
 }
