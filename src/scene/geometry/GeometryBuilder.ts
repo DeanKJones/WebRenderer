@@ -1,7 +1,8 @@
+import { Texture2D } from "../texture/Texture2D";
 import { Geometry } from "./Geometry";
 
 export class GeometryBuilder {
-    public createQuadGeometry(): Geometry {
+    public createQuadGeometry(texture: Texture2D): Geometry {
         let vertices = new Float32Array([
             // t1 
             -0.5, -0.5, 0.0, // bottom left
@@ -30,10 +31,10 @@ export class GeometryBuilder {
             1, 0  // top right
         ])
 
-        return new Geometry(vertices, indices, colors, texCoords);
+        return new Geometry(vertices, indices, colors, texCoords, texture);
     }
 
-    public createCubeGeometry(): Geometry {
+    public createCubeGeometry(texture: Texture2D): Geometry {
 
         let vertices = new Float32Array([
             // front
@@ -157,12 +158,12 @@ export class GeometryBuilder {
             0, 0,
             1, 1,
             1, 0
-        ]);
+        ]);;
 
-        return new Geometry(vertices, indices, colors, texCoords);
+        return new Geometry(vertices, indices, colors, texCoords, texture);
     }
     
-    public createGridGeometry(size: number, divisions: number): Geometry {
+    public createGridGeometry(size: number, divisions: number, texture: Texture2D): Geometry {
         const halfSize = size / 2;
         const step = size / divisions;
         const vertices = [];
@@ -192,6 +193,6 @@ export class GeometryBuilder {
         const texCoords = new Float32Array(vertices.length / 3 * 2);
         texCoords.fill(0);
     
-        return new Geometry(verticesArray, indicesArray, colors, texCoords);
+        return new Geometry(verticesArray, indicesArray, colors, texCoords, texture);
     }
 } 

@@ -155,7 +155,7 @@ export class Mat4x4 extends Float32Array {
     }
 
     public static view(eye: Vec3, target: Vec3, up: Vec3): Mat4x4 {
-        const zAxis = Vec3.normalize(Vec3.subtract(eye, target));
+        const zAxis = Vec3.normalize(Vec3.subtract(target, eye));
         const xAxis = Vec3.normalize(Vec3.cross(up, zAxis));
         const yAxis = Vec3.cross(zAxis, xAxis);
 

@@ -12,14 +12,13 @@ struct VSOutput {
 }
 
 @group(0) @binding(0)
-var<uniform> transform: mat4x4f;
-
-@group(0) @binding(1)
-var<uniform> textureTilling: vec2f;
-
+var<uniform> modelMatrix: mat4x4f;
 
 @group(1) @binding(0)
 var<uniform> projectionView: mat4x4f;
+
+@group(1) @binding(1)
+var<uniform> viewMatrix: mat4x4f;
 
 @vertex 
 fn unlitMaterialVS(
@@ -30,19 +29,19 @@ fn unlitMaterialVS(
 ) -> VSOutput
 {
     var out : VSOutput;
-    out.position = projectionView * transform * vec4f(in.position, 1.0);
+    out.position = projectionView * viewMatrix * modelMatrix * vec4f(in.position, 1.0);
     out.color = in.color;
-    out.texCoord = in.texCoord * textureTilling;
+    out.texCoord = in.texCoord;
 
     return out;
 }
 
-@group(2) @binding(0)
+@group(0) @binding(1)
 var diffuseTexture: texture_2d<f32>;
-@group(2) @binding(1)
+@group(0) @binding(2)
 var diffuseTexSampler: sampler;
 
-@group(3) @binding(0)
+@group(0) @binding(3)
 var<uniform> diffuseColor: vec4f;
 
 

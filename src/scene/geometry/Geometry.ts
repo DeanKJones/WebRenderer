@@ -1,30 +1,27 @@
+
 import { Mat4x4 } from "../../utils/math/Mat4x4";
+import { Texture2D } from "../texture/Texture2D";
 
 export class Geometry 
 {
-    geometryType: string = "Base Geometry";
-    geometryName: string = "Base Geometry";
-    geometryID: number = 0;
-    geometryIndex: number = 0;
-    geometrySize: number = 0;
-    geometryVertices: number = 0;
-    geometryFaces: number = 0;
-    geometryEdges: number = 0;
+    //private _geometryName: string = "Base Geometry";
 
-    modelMatrix: Mat4x4;
+    private _modelMatrix: Mat4x4;
+    private _texture: Texture2D;
+
     positions: Float32Array;
     indices: Uint16Array;
     colors: Float32Array;
     texCoords: Float32Array;
 
-    constructor(
-        pPositions: Float32Array,
-        pIndices: Uint16Array,
-        pColors: Float32Array,
-        pTexCoords: Float32Array
-    )
+    constructor( pPositions: Float32Array,
+                 pIndices: Uint16Array,
+                 pColors: Float32Array,
+                 pTexCoords: Float32Array,
+                 pTexture: Texture2D )
     {
-        this.modelMatrix = Mat4x4.identity();
+        this._modelMatrix = Mat4x4.identity();
+        this._texture = pTexture;
 
         this.positions = pPositions;
         this.indices = pIndices;
@@ -32,13 +29,29 @@ export class Geometry
         this.texCoords = pTexCoords;
     }
 
-    public update(deltaTime: number): void
-    {
-        // Update logic for the object
-    }
+    //---------------------------------
+    // SETTERS
 
     public set transform(modelMatrix: Mat4x4)
     {
-        this.modelMatrix = modelMatrix;
+        this._modelMatrix = modelMatrix;
+    }
+
+    //---------------------------------
+    // GETTERS
+
+    public get transform(): Mat4x4
+    {
+        return this._modelMatrix;
+    }
+
+    public get texture(): Texture2D
+    {
+        return this._texture;
+    }
+
+    public get modelMatrix(): Float32Array
+    {
+        return this._modelMatrix;
     }
 }

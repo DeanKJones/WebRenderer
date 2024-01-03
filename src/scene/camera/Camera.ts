@@ -6,8 +6,8 @@ export class Camera
 {
     public buffer: UniformBuffer;
 
-    private _position: Vec3 = new Vec3(0, 0, 0);
-    private _target: Vec3 = new Vec3(0, 0, -1);
+    private _position: Vec3 = new Vec3(-0.5, -0.5, -2);
+    private _target: Vec3 = new Vec3(0, 0, 0);
     private _up: Vec3 = new Vec3(0, 1, 0);
 
     private _aspect: number;        // Aspect ratio
@@ -95,7 +95,7 @@ export class Camera
     //---------------------------------------------
 
     private updateProjectionView() {
-        let view = Mat4x4.lookAt(this._position, this._target, this._up);
+        let view = Mat4x4.view(this._position, this._target, this._up);
         let projection: Mat4x4;
 
         if (this._isPerspective) {
