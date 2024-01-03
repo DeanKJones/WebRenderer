@@ -48,7 +48,6 @@ async function init() {
   const texture =  await Texture2D.create(device, image);
 
   const geometry = new GeometryBuilder().createCubeGeometry(texture);
-  
 
   // Create the render context
   const context = new RenderContext(device, camera, canvas, texture);
@@ -80,8 +79,8 @@ async function init() {
     const unlitPipeline = new UnlitRenderPipeline(context);
 
     // DRAW HERE
-    angle += 0.01;
-    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(0, 0, 3), Mat4x4.rotationX(angle));
+    angle += 0.02;
+    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(0, 0, 0), Mat4x4.rotationX(angle));
     geometry.transform = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle));
 
     context.bindGroupManager.updateGeometryBindGroup(geometry);

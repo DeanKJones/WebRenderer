@@ -142,6 +142,19 @@ export class BindGroupManager
     }
 
     // ------------------------------------------
+    // UPDATE PROJECTION VIEW BIND GROUP
+    public updateProjectionViewBindGroup(camera: Camera) {
+        this._viewMatrixBuffer = new UniformBuffer(this.device,
+            camera.projectionView,
+            "View Matrix Buffer");
+
+        this.setBindGroupByName('projectionView', new ProjectionBindGroup(this.device, 
+                                                            this.createProjectionViewGroupLayout(), 
+                                                            this._viewMatrixBuffer.buffer, 
+                                                            camera.buffer.buffer).createBindGroup());
+    }
+
+    // ------------------------------------------
     // GETTERS
 
     public getViewMatrixBuffer() : UniformBuffer {
@@ -160,7 +173,6 @@ export class BindGroupManager
         return this._bindGroups.get(name) as GPUBindGroup;
     }
 
-    
     // ------------------------------
     // SETTERS 
     

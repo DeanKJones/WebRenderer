@@ -6,13 +6,13 @@ export class Camera
 {
     public buffer: UniformBuffer;
 
-    private _position: Vec3 = new Vec3(-0.5, -0.5, -2);
+    private _position: Vec3 = new Vec3(0, 0, -3);
     private _target: Vec3 = new Vec3(0, 0, 0);
     private _up: Vec3 = new Vec3(0, 1, 0);
 
     private _aspect: number;        // Aspect ratio
-    private _near: number = 0.01;   // Near clipping plane
-    private _far: number = 10;      // Far clipping plane
+    private _near: number = 0.0001; // Near clipping plane
+    private _far: number = 100;     // Far clipping plane
     private _fov: number = 45;      // Field of view (for perspective projection)
 
     private _isPerspective: boolean = true;
