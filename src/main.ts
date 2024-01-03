@@ -2,7 +2,6 @@ import { GeometryBuffers } from "./render_pipelines/attribute_buffers/GeometryBu
 import { Camera } from "./scene/camera/Camera";
 import { GeometryBuilder } from "./scene/geometry/GeometryBuilder";
 
-//import { Color } from "./math/Color";
 import { Mat4x4 } from "./utils/math/Mat4x4";
 
 import { UnlitRenderPipeline } from "./render_pipelines/UnlitRenderPipeline/UnlitRenderPipeline";
@@ -44,7 +43,7 @@ async function init() {
   // Scene setup
   const camera = new Camera(device, canvas);
   // Texture setup
-  const image = await loadImage("assets/textures/test_texture.jpeg");
+  const image = await loadImage("assets/textures/ramzi_texture.jpeg");
   const texture =  await Texture2D.create(device, image);
 
   const geometry = new GeometryBuilder().createCubeGeometry(texture);
