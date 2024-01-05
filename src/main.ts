@@ -46,11 +46,23 @@ async function init() {
   const image = await loadImage("assets/textures/ramzi_texture.jpeg");
   const texture =  await Texture2D.create(device, image);
 
+  const image2 = await loadImage("assets/textures/test_texture.jpeg");
+  const texture2 =  await Texture2D.create(device, image2);
+
+  // Geometry setup
   const geometry = new GeometryBuilder().createCubeGeometry(texture);
+  const geometry2 = new GeometryBuilder().createCubeGeometry(texture2);
+  const geometry3 = new GeometryBuilder().createCubeGeometry(texture2);
 
   // Create the render context
   const context = new RenderContext(device, camera, canvas, texture);
   const geometryBuffers = new GeometryBuffers(device, geometry);
+
+  const context2 = new RenderContext(device, camera, canvas, texture2);
+  const geometryBuffers2 = new GeometryBuffers(device, geometry2);
+
+  const context3 = new RenderContext(device, camera, canvas, texture2);
+  const geometryBuffers3 = new GeometryBuffers(device, geometry3);
   
   const draw = () => 
   {
@@ -79,12 +91,24 @@ async function init() {
 
     // DRAW HERE
     angle += 0.02;
-    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(0, 0, 0), Mat4x4.rotationX(angle));
-    geometry.transform = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle));
+    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(0.5, -0.5, 0), Mat4x4.rotationX(angle*0.5));
+    matrixTransforms = Mat4x4.multiply(matrixTransforms, Mat4x4.scale(0.5, 0.5, 0.5));
+    geometry.transform = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle*0.5));
+
+    let matrixTransforms2 = Mat4x4.multiply(Mat4x4.translation(0, 0.5, 0), Mat4x4.rotationX(angle));
+    matrixTransforms2 = Mat4x4.multiply(matrixTransforms2, Mat4x4.scale(0.6, 0.6, 0.6));
+    geometry2.transform = Mat4x4.multiply(matrixTransforms2, Mat4x4.rotationY(angle));
+
+    let matrixTransforms3 = Mat4x4.multiply(Mat4x4.translation(-0.5, -0.5, 0), Mat4x4.scale(0.3, 0.3, 0.3));
+    geometry3.transform = Mat4x4.multiply(matrixTransforms3, Mat4x4.rotationY(-angle));
 
     context.bindGroupManager.updateGeometryBindGroup(geometry);
+    context2.bindGroupManager.updateGeometryBindGroup(geometry2);
+    context3.bindGroupManager.updateGeometryBindGroup(geometry3);
 
     unlitPipeline.draw(renderPassEncoder, geometryBuffers, context);
+    unlitPipeline.draw(renderPassEncoder, geometryBuffers2, context2);
+    unlitPipeline.draw(renderPassEncoder, geometryBuffers3, context3);
 
     renderPassEncoder.end();
     device.queue.submit([
