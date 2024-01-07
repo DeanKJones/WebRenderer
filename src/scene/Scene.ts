@@ -1,42 +1,103 @@
 //import { Object } from './geometry/Object';
+import { RenderContext } from '../render_pipelines/RenderContext';
+import { GeometryBuffers } from '../render_pipelines/attribute_buffers/GeometryBuffers';
+import { loadImage } from '../utils/engine/image_utils';
 import { Camera } from './camera/Camera';
+import { Geometry } from './geometry/Geometry';
+import { GeometryBuilder } from './geometry/GeometryBuilder';
+import { NodeGraph } from './scene_graph';
+import { Texture2D } from './texture/Texture2D';
 
-class Scene {
-    private objects: Object[] = [];
-    private camera: Camera;
+export class Scene {
+    // Will get resolved in createCubeScene()
+    private _camera!: Camera;
+    private _sceneGraph: NodeGraph;
 
-    constructor(camera: Camera) {
-        this.camera = camera;
+    private _device: GPUDevice;
+    private _canvas: HTMLCanvasElement;
+
+    private _renderContexts: Array<RenderContext>;
+    private _geometryBuffers: Array<GeometryBuffers>;
+
+    private _geometry: Array<Geometry>;
+
+    constructor(canvas: HTMLCanvasElement, device: GPUDevice) {
+        this._sceneGraph = new NodeGraph();
+        this._device = device;
+        this._canvas = canvas;
+
+        // Initialize arrays
+        this._renderContexts = [];
+        this._geometryBuffers = [];
+        this._geometry = [];
+
+        this.createCubeScene();
     }
 
-    public addObject(object: Object): void {
-        this.objects.push(object);
-    }
+    public async createCubeScene(): Promise<void> {
+        // Scene setup
+        this._camera = new Camera(this._device, this._canvas);
+        // Texture setup
+        const image = await loadImage("assets/textures/ramzi_texture.jpeg");
+        const texture = await Texture2D.create(this._device, image);
 
-    public removeObject(object: Object): void {
-        const index = this.objects.indexOf(object);
-        if (index !== -1) {
-            this.objects.splice(index, 1);
-        }
-    }
+        const image2 = await loadImage("assets/textures/test_texture.jpeg");
+        const texture2 = await Texture2D.create(this._device, image2);
 
-    // public update(deltaTime: number): void {
-    //     // Update logic for the scene
-    //     for (const object of this.objects) {
-    //         object.update(deltaTime);
-    //     }
-    // }
+        // Geometry setup
+        const geometry = new GeometryBuilder().createCubeGeometry(texture);
+        this._geometry.push(geometry);
+        const geometry2 = new GeometryBuilder().createCubeGeometry(texture2);
+        this._geometry.push(geometry2);
+        const geometry3 = new GeometryBuilder().createCubeGeometry(texture2);
+        this._geometry.push(geometry3);
 
-    // Other methods...
+        // Create the render context
+        const geometryNode_01 = new NodeGraph();
+        const context = new RenderContext(this._device, this._camera, this._canvas, texture);
+        const geometryBuffers = new GeometryBuffers(this._device, geometry);
 
-    // Getters and setters
-    public getObjects(): Object[] {
-        return this.objects;
+        const geometryNode_02 = new NodeGraph();
+        const context2 = new RenderContext(this._device, this._camera, this._canvas, texture2);
+        const geometryBuffers2 = new GeometryBuffers(this._device, geometry2);
+
+        const geometryNode_03 = new NodeGraph();
+        const context3 = new RenderContext(this._device, this._camera, this._canvas, texture2);
+        const geometryBuffers3 = new GeometryBuffers(this._device, geometry3);
+
+        // Add to the list of render contexts
+        this._renderContexts.push(context);
+        this._renderContexts.push(context2);
+        this._renderContexts.push(context3);
+
+        // Add to the list of geometry buffers
+        this._geometryBuffers.push(geometryBuffers);
+        this._geometryBuffers.push(geometryBuffers2);
+        this._geometryBuffers.push(geometryBuffers3);
+
+        // Add to the scene graph
+        this._sceneGraph.addChild(geometryNode_01);
+        this._sceneGraph.addChild(geometryNode_02);
+        this._sceneGraph.addChild(geometryNode_03);
     }
 
     public getCamera(): Camera {
-        return this.camera;
+        return this._camera;
+    }
+
+    public getSceneRenderContexts(): Array<RenderContext> {
+        return this._renderContexts;
+    }
+
+    public getSceneGeometryBuffers(): Array<GeometryBuffers> {
+        return this._geometryBuffers;
+    }
+
+    public getSceneGeometry(): Array<Geometry> {
+        return this._geometry;
+    }
+
+    public setSceneRenderContextByIndex(context: RenderContext, index: number): void {
+        this._renderContexts[index] = context;
     }
 }
-
-export { Scene };
