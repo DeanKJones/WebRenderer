@@ -7,18 +7,8 @@ import { Mat4x4 } from "./utils/math/Mat4x4";
 import { UnlitRenderPipeline } from "./render_pipelines/UnlitRenderPipeline/UnlitRenderPipeline";
 import { Texture2D } from "./scene/texture/Texture2D";
 import { RenderContext } from "./render_pipelines/RenderContext";
+import { loadImage } from "./utils/engine/image_utils";
 
-async function loadImage(path: string): Promise<HTMLImageElement> {
-
-  return new Promise((resolve, reject) => {
-
-    const image = new Image();
-    image.src = path;
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-
-  });
-}
 
 let angle = 0;
 
