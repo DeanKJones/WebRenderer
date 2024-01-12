@@ -2,6 +2,10 @@
 import { Mat4x4 } from "../../utils/math/Mat4x4";
 import { Texture2D } from "../texture/Texture2D";
 
+import { GeometryData } from "./GeometryData";
+import { GeometryBuffers } from "../../render_pipelines/attribute_buffers/GeometryBuffers";
+import { RenderContext } from "../../render_pipelines/RenderContext";
+
 export class Geometry 
 {
     //private _geometryName: string = "Base Geometry";
@@ -22,6 +26,34 @@ export class Geometry
         this._geometryData = pGeometryData;
         this._gBuffer = new GeometryBuffers(pDevice, this);
     }
+
+    //---------------------------------
+    // DRAW
+    
+    public draw(renderPassEncoder: GPURenderPassEncoder, context: RenderContext, pipeline: GPURenderPipeline) 
+    {
+        // Set Pipeline
+        renderPassEncoder.setPipeline(pipeline);
+
+        renderPassEncoder.setVertexBuffer(0, this._gBuffer.positionsBuffer);
+        renderPassEncoder.setVertexBuffer(1, this._gBuffer.colorsBuffer);
+        renderPassEncoder.setVertexBuffer(2, this._gBuffer.texCoordsBuffer);
+
+        let geometryBindGroup = context.bindGroupManager.getBindGroupByName("geometry");
+        renderPassEncoder.setBindGroup(0, geometryBindGroup);
+
+        let projectionViewBindGroup = context.bindGroupManager.getBindGroupByName("projectionView");
+        renderPassEncoder.setBindGroup(1, projectionViewBindGroup);
+
+        if (this._gBuffer.indicesBuffer) {
+            renderPassEncoder.setIndexBuffer(this._gBuffer.indicesBuffer, "uint16");
+            renderPassEncoder.drawIndexed(this._gBuffer.indexCount!, 1, 0, 0, 0);
+        }
+        else {
+            renderPassEncoder.draw(this._gBuffer.vertexCount, 1, 0, 0);
+        }
+    }
+    
 
     //---------------------------------
     // SETTERS

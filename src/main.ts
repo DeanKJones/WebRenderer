@@ -1,4 +1,3 @@
-import { GeometryBuffers } from "./render_pipelines/attribute_buffers/GeometryBuffers";
 import { Camera } from "./scene/camera/Camera";
 import { GeometryBuilder } from "./scene/geometry/GeometryBuilder";
 
@@ -39,20 +38,18 @@ async function init() {
   const image2 = await loadImage("assets/textures/test_texture.jpeg");
   const texture2 =  await Texture2D.create(device, image2);
 
+  // Geometry Builder
+  const geometryBuilder = new GeometryBuilder(device);
+
   // Geometry setup
-  const geometry = new GeometryBuilder().createCubeGeometry(texture);
-  const geometry2 = new GeometryBuilder().createCubeGeometry(texture2);
-  const geometry3 = new GeometryBuilder().createCubeGeometry(texture2);
+  const geometry = geometryBuilder.createCubeGeometry(texture);
+  const geometry2 = geometryBuilder.createCubeGeometry(texture2);
+  const geometry3 = geometryBuilder.createCubeGeometry(texture2);
 
   // Create the render context
   const context = new RenderContext(device, camera, canvas, texture);
-  const geometryBuffers = new GeometryBuffers(device, geometry);
-
   const context2 = new RenderContext(device, camera, canvas, texture2);
-  const geometryBuffers2 = new GeometryBuffers(device, geometry2);
-
   const context3 = new RenderContext(device, camera, canvas, texture2);
-  const geometryBuffers3 = new GeometryBuffers(device, geometry3);
   
   const draw = () => 
   {
@@ -78,6 +75,7 @@ async function init() {
     
     // Create the render pipeline
     const unlitPipeline = new UnlitRenderPipeline(context);
+    const pipeline = unlitPipeline.pipeline;
 
     // DRAW HERE
     angle += 0.02;
@@ -96,9 +94,9 @@ async function init() {
     context2.bindGroupManager.updateGeometryBindGroup(geometry2);
     context3.bindGroupManager.updateGeometryBindGroup(geometry3);
 
-    unlitPipeline.draw(renderPassEncoder, geometryBuffers, context);
-    unlitPipeline.draw(renderPassEncoder, geometryBuffers2, context2);
-    unlitPipeline.draw(renderPassEncoder, geometryBuffers3, context3);
+    geometry.draw(renderPassEncoder, context, pipeline);
+    geometry2.draw(renderPassEncoder, context2, pipeline);
+    geometry3.draw(renderPassEncoder, context3, pipeline);
 
     renderPassEncoder.end();
     device.queue.submit([
