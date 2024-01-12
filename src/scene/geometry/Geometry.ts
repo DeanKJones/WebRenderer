@@ -9,24 +9,18 @@ export class Geometry
     private _modelMatrix: Mat4x4;
     private _texture: Texture2D;
 
-    positions: Float32Array;
-    indices: Uint16Array;
-    colors: Float32Array;
-    texCoords: Float32Array;
+    private _geometryData: GeometryData;
+    private _gBuffer: GeometryBuffers;
 
-    constructor( pPositions: Float32Array,
-                 pIndices: Uint16Array,
-                 pColors: Float32Array,
-                 pTexCoords: Float32Array,
+    constructor( pDevice: GPUDevice,
+                 pGeometryData: GeometryData,
                  pTexture: Texture2D )
     {
         this._modelMatrix = Mat4x4.identity();
         this._texture = pTexture;
 
-        this.positions = pPositions;
-        this.indices = pIndices;
-        this.colors = pColors;
-        this.texCoords = pTexCoords;
+        this._geometryData = pGeometryData;
+        this._gBuffer = new GeometryBuffers(pDevice, this);
     }
 
     //---------------------------------
@@ -53,5 +47,10 @@ export class Geometry
     public get modelMatrix(): Float32Array
     {
         return this._modelMatrix;
+    }
+
+    public get geometryData(): GeometryData
+    {
+        return this._geometryData;
     }
 }

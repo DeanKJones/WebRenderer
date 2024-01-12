@@ -1,7 +1,16 @@
 import { Texture2D } from "../texture/Texture2D";
 import { Geometry } from "./Geometry";
 
+import { GeometryData } from "./GeometryData";
+
 export class GeometryBuilder {
+
+    private device: GPUDevice;
+
+    constructor(device: GPUDevice) {
+        this.device = device;
+    }
+
     public createQuadGeometry(texture: Texture2D): Geometry {
         let vertices = new Float32Array([
             // t1 
@@ -31,7 +40,14 @@ export class GeometryBuilder {
             1, 0  // top right
         ])
 
-        return new Geometry(vertices, indices, colors, texCoords, texture);
+        let geometryData: GeometryData = {
+            positions: vertices,
+            indices: indices,
+            colors: colors,
+            texCoords: texCoords
+        }
+
+        return new Geometry(this.device, geometryData, texture);
     }
 
     public createCubeGeometry(texture: Texture2D): Geometry {
@@ -160,7 +176,14 @@ export class GeometryBuilder {
             1, 0
         ]);;
 
-        return new Geometry(vertices, indices, colors, texCoords, texture);
+        let geometryData: GeometryData = {
+            positions: vertices,
+            indices: indices,
+            colors: colors,
+            texCoords: texCoords
+        }
+
+        return new Geometry(this.device, geometryData, texture);
     }
     
     public createGridGeometry(size: number, divisions: number, texture: Texture2D): Geometry {
@@ -192,7 +215,14 @@ export class GeometryBuilder {
         // Assuming the grid doesn't need texture coordinates
         const texCoords = new Float32Array(vertices.length / 3 * 2);
         texCoords.fill(0);
+
+        let geometryData: GeometryData = {
+            positions: verticesArray,
+            indices: indicesArray,
+            colors: colors,
+            texCoords: texCoords
+        }
     
-        return new Geometry(verticesArray, indicesArray, colors, texCoords, texture);
+        return new Geometry(this.device, geometryData, texture);
     }
 } 
