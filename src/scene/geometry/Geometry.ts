@@ -16,15 +16,14 @@ export class Geometry
     private _geometryData: GeometryData;
     private _gBuffer: GeometryBuffers;
 
-    constructor( pDevice: GPUDevice,
-                 pGeometryData: GeometryData,
-                 pTexture: Texture2D )
+    constructor( pContext: RenderContext,
+                 initData: () => GeometryData )  // Function that returns GeometryData
     {
         this._modelMatrix = Mat4x4.identity();
-        this._texture = pTexture;
+        this._texture = pContext.texture;
 
-        this._geometryData = pGeometryData;
-        this._gBuffer = new GeometryBuffers(pDevice, this);
+        this._geometryData = initData();
+        this._gBuffer = new GeometryBuffers(pContext.device, this);
     }
 
     //---------------------------------
@@ -53,7 +52,6 @@ export class Geometry
             renderPassEncoder.draw(this._gBuffer.vertexCount, 1, 0, 0);
         }
     }
-    
 
     //---------------------------------
     // SETTERS
