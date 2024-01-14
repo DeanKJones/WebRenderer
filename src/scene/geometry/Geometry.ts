@@ -2,9 +2,12 @@
 import { Mat4x4 } from "../../utils/math/Mat4x4";
 import { Texture2D } from "../texture/Texture2D";
 
-import { GeometryData } from "./GeometryData";
 import { GeometryBuffers } from "../../render_pipelines/attribute_buffers/GeometryBuffers";
 import { RenderContext } from "../../render_pipelines/RenderContext";
+
+import { GeometryData } from "./GeometryData";
+import { Cube } from "./primitives/Cube";
+import { Grid } from "./editor/Grid";
 
 export class Geometry 
 {
@@ -12,18 +15,16 @@ export class Geometry
 
     private _modelMatrix: Mat4x4;
     private _texture: Texture2D;
-
-    private _geometryData: GeometryData;
     private _gBuffer: GeometryBuffers;
 
-    constructor( pContext: RenderContext,
-                 initData: () => GeometryData )  // Function that returns GeometryData
+    private _cubeData?: GeometryData;
+    private _gridData?: GeometryData;
+
+    constructor( private context: RenderContext)
     {
         this._modelMatrix = Mat4x4.identity();
-        this._texture = pContext.texture;
-
-        this._geometryData = initData();
-        this._gBuffer = new GeometryBuffers(pContext.device, this);
+        this._texture = context.texture;
+        this._gBuffer = new GeometryBuffers(context.device, this);
     }
 
     //---------------------------------
@@ -54,6 +55,43 @@ export class Geometry
     }
 
     //---------------------------------
+    // GEOMETRY
+    //     init
+
+    private initCubeData(): GeometryData
+    {
+        let cube = new Cube();
+        return cube.data;
+    }
+
+    public initGridData(): GeometryData
+    {
+        let grid = new Grid();
+        return grid.data;
+    }
+
+    //---------------------------------
+    // GEOMETRY
+    //   create
+
+    public createCubeData(): GeometryData
+    {
+        if (!this._cubeData) {
+            this._cubeData = this.initCubeData();
+        }
+        return this._cubeData;
+    }
+
+    public createGridData(): GeometryData
+    {
+        if (!this._gridData) {
+            this._gridData = this.initGridData();
+        }
+        return this._gridData;
+    }
+
+
+    //---------------------------------
     // SETTERS
 
     public set transform(modelMatrix: Mat4x4)
@@ -63,6 +101,14 @@ export class Geometry
 
     //---------------------------------
     // GETTERS
+
+    public get gBuffer(): GeometryBuffers 
+    {
+        if (!this._gBuffer) {
+            this._gBuffer = new GeometryBuffers(this.context.device, this);
+        }
+        return this._gBuffer;
+    }
 
     public get transform(): Mat4x4
     {
@@ -77,10 +123,5 @@ export class Geometry
     public get modelMatrix(): Float32Array
     {
         return this._modelMatrix;
-    }
-
-    public get geometryData(): GeometryData
-    {
-        return this._geometryData;
     }
 }

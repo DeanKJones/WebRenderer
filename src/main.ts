@@ -1,12 +1,13 @@
 import { Camera } from "./scene/camera/Camera";
-import { GeometryBuilder } from "./scene/geometry/GeometryBuilder";
 
 import { Mat4x4 } from "./utils/math/Mat4x4";
 
-import { UnlitRenderPipeline } from "./render_pipelines/UnlitRenderPipeline/UnlitRenderPipeline";
+import { UnlitRenderPipeline } from "./render_pipelines/pipelines/UnlitRenderPipeline";
 import { Texture2D } from "./scene/texture/Texture2D";
 import { RenderContext } from "./render_pipelines/RenderContext";
 import { loadImage } from "./utils/engine/image_utils";
+import { Cube } from "./scene/geometry/primitives/Cube";
+import { Geometry } from "./scene/geometry/Geometry";
 
 
 let angle = 0;
@@ -32,24 +33,15 @@ async function init() {
   // Scene setup
   const camera = new Camera(device, canvas);
   // Texture setup
-  const image = await loadImage("assets/textures/ramzi_texture.jpeg");
+  const image = await loadImage("assets/textures/test_texture.jpeg");
   const texture =  await Texture2D.create(device, image);
 
-  const image2 = await loadImage("assets/textures/test_texture.jpeg");
-  const texture2 =  await Texture2D.create(device, image2);
-
-  // Geometry Builder
-  const geometryBuilder = new GeometryBuilder(device);
+  const context = new RenderContext(device, camera, canvas, texture);
 
   // Geometry setup
-  const geometry = geometryBuilder.createCubeGeometry(texture);
-  const geometry2 = geometryBuilder.createCubeGeometry(texture2);
-  const geometry3 = geometryBuilder.createCubeGeometry(texture2);
-
-  // Create the render context
-  const context = new RenderContext(device, camera, canvas, texture);
-  const context2 = new RenderContext(device, camera, canvas, texture2);
-  const context3 = new RenderContext(device, camera, canvas, texture2);
+  const geometry:  Geometry = new Geometry(context);
+  const geometry2: Geometry = new Geometry(context);
+  const geometry3: Geometry = new Geometry(context);
   
   const draw = () => 
   {
@@ -91,12 +83,12 @@ async function init() {
     geometry3.transform = Mat4x4.multiply(matrixTransforms3, Mat4x4.rotationY(-angle));
 
     context.bindGroupManager.updateGeometryBindGroup(geometry);
-    context2.bindGroupManager.updateGeometryBindGroup(geometry2);
-    context3.bindGroupManager.updateGeometryBindGroup(geometry3);
+    context.bindGroupManager.updateGeometryBindGroup(geometry2);
+    context.bindGroupManager.updateGeometryBindGroup(geometry3);
 
     geometry.draw(renderPassEncoder, context, pipeline);
-    geometry2.draw(renderPassEncoder, context2, pipeline);
-    geometry3.draw(renderPassEncoder, context3, pipeline);
+    geometry2.draw(renderPassEncoder, context, pipeline);
+    geometry3.draw(renderPassEncoder, context, pipeline);
 
     renderPassEncoder.end();
     device.queue.submit([

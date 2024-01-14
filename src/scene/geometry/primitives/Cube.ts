@@ -1,16 +1,16 @@
-import { RenderContext } from "../../../render_pipelines/RenderContext";
-import { Geometry } from "../Geometry";
+
 import { GeometryData } from "../GeometryData";
 
-
-export class Cube extends Geometry 
+export class Cube 
 {
-    constructor(context: RenderContext) 
+    public data: GeometryData;
+
+    constructor()
     {
-        super(context, () => this.initData());
+        this.data = this.initData();
     }
 
-    private initData(): GeometryData {
+    public initData(): GeometryData {
         let vertices = new Float32Array([
             // front
             -0.5, -0.5, 0.5, // bottom left

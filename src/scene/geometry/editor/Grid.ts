@@ -1,14 +1,13 @@
-import { RenderContext } from "../../../render_pipelines/RenderContext";
-import { Geometry } from "../Geometry";
+
 import { GeometryData } from "../GeometryData";
 
-
-
-export class Grid extends Geometry 
+export class Grid
 {
-    constructor (context: RenderContext)
+    public data: GeometryData;
+
+    constructor ()
     {
-        super(context, () => this.initData());
+        this.data = this.initData();
     }
 
     private initData(): GeometryData {
