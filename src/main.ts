@@ -6,7 +6,7 @@ import { UnlitRenderPipeline } from "./render_pipelines/pipelines/UnlitRenderPip
 import { Texture2D } from "./scene/texture/Texture2D";
 import { RenderContext } from "./render_pipelines/RenderContext";
 import { loadImage } from "./utils/engine/image_utils";
-import { Cube } from "./scene/geometry/primitives/Cube";
+
 import { Geometry } from "./scene/geometry/Geometry";
 
 
@@ -82,13 +82,13 @@ async function init() {
     let matrixTransforms3 = Mat4x4.multiply(Mat4x4.translation(-0.5, -0.5, 0), Mat4x4.scale(0.3, 0.3, 0.3));
     geometry3.transform = Mat4x4.multiply(matrixTransforms3, Mat4x4.rotationY(-angle));
 
-    context.bindGroupManager.updateGeometryBindGroup(geometry);
-    context.bindGroupManager.updateGeometryBindGroup(geometry2);
-    context.bindGroupManager.updateGeometryBindGroup(geometry3);
+    geometry.updateGeometryBindGroup();
+    geometry2.updateGeometryBindGroup();
+    geometry3.updateGeometryBindGroup();
 
-    geometry.draw(renderPassEncoder, context, pipeline);
-    geometry2.draw(renderPassEncoder, context, pipeline);
-    geometry3.draw(renderPassEncoder, context, pipeline);
+    geometry.draw(renderPassEncoder, pipeline);
+    geometry2.draw(renderPassEncoder, pipeline);
+    geometry3.draw(renderPassEncoder, pipeline);
 
     renderPassEncoder.end();
     device.queue.submit([

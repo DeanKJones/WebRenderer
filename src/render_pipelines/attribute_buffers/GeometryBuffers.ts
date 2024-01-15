@@ -12,65 +12,69 @@ export class GeometryBuffers
 
     constructor(device: GPUDevice, geometry: Geometry) 
     {
+        // Get the geometry data
+        // TODO - replace this with the geometry data not create a new one here
+        let geometryData = geometry.initCubeData();
+
         // POSITIONS
         this.positionsBuffer = device.createBuffer({
             label: "Positions Buffer",
-            size: geometry.geometryData.positions.byteLength,
+            size: geometryData.positions.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST 
         });
 
         device.queue.writeBuffer(this.positionsBuffer, 
             0, 
-            geometry.geometryData.positions.buffer, 
+            geometryData.positions.buffer, 
             0, 
-            geometry.geometryData.positions.byteLength);
+            geometryData.positions.byteLength);
 
-        this.vertexCount = geometry.geometryData.positions.length / 3; // (xyz)
+        this.vertexCount = geometryData.positions.length / 3; // (xyz)
 
 
         // INDICES
-        if (geometry.geometryData.indices.length > 0) 
+        if (geometryData.indices.length > 0) 
         {
             this.indicesBuffer = device.createBuffer({
                 label: "Indices Buffer",
-                size: geometry.geometryData.indices.byteLength,
+                size: geometryData.indices.byteLength,
                 usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
             });
 
             device.queue.writeBuffer(this.indicesBuffer,
                 0,
-                geometry.geometryData.indices.buffer,
+                geometryData.indices.buffer,
                 0,
-                geometry.geometryData.indices.byteLength);
+                geometryData.indices.byteLength);
 
-            this.indexCount = geometry.geometryData.indices.length;
+            this.indexCount = geometryData.indices.length;
         }
     
         // COLORS
         this.colorsBuffer = device.createBuffer({
             label: "Colors Buffer",
-            size: geometry.geometryData.colors.byteLength,
+            size: geometryData.colors.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
         device.queue.writeBuffer(this.colorsBuffer,
             0,
-            geometry.geometryData.colors.buffer,
+            geometryData.colors.buffer,
             0,
-            geometry.geometryData.colors.byteLength);
+            geometryData.colors.byteLength);
 
         // TEXCOORDS
         this.texCoordsBuffer = device.createBuffer({
             label: "TexCoords Buffer",
-            size: geometry.geometryData.texCoords.byteLength,
+            size: geometryData.texCoords.byteLength,
             usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
         });
 
         device.queue.writeBuffer(this.texCoordsBuffer,
             0,
-            geometry.geometryData.texCoords.buffer,
+            geometryData.texCoords.buffer,
             0,
-            geometry.geometryData.texCoords.byteLength);
+            geometryData.texCoords.byteLength);
     
     }
 }

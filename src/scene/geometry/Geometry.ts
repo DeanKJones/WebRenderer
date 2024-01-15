@@ -11,8 +11,6 @@ import { Grid } from "./editor/Grid";
 
 export class Geometry 
 {
-    //private _geometryName: string = "Base Geometry";
-
     private _modelMatrix: Mat4x4;
     private _texture: Texture2D;
     private _gBuffer: GeometryBuffers;
@@ -20,17 +18,23 @@ export class Geometry
     private _cubeData?: GeometryData;
     private _gridData?: GeometryData;
 
-    constructor( private context: RenderContext)
+    private _context: RenderContext;
+
+    constructor(context: RenderContext)
     {
+        this._context = context;
+
         this._modelMatrix = Mat4x4.identity();
         this._texture = context.texture;
         this._gBuffer = new GeometryBuffers(context.device, this);
+
+        context.bindGroupManager.createGeometryBindGroup(this);
     }
 
     //---------------------------------
     // DRAW
     
-    public draw(renderPassEncoder: GPURenderPassEncoder, context: RenderContext, pipeline: GPURenderPipeline) 
+    public draw(renderPassEncoder: GPURenderPassEncoder, pipeline: GPURenderPipeline) 
     {
         // Set Pipeline
         renderPassEncoder.setPipeline(pipeline);
@@ -39,10 +43,10 @@ export class Geometry
         renderPassEncoder.setVertexBuffer(1, this._gBuffer.colorsBuffer);
         renderPassEncoder.setVertexBuffer(2, this._gBuffer.texCoordsBuffer);
 
-        let geometryBindGroup = context.bindGroupManager.getBindGroupByName("geometry");
+        let geometryBindGroup = this._context.bindGroupManager.getGeometryBindGroup(this);
         renderPassEncoder.setBindGroup(0, geometryBindGroup);
 
-        let projectionViewBindGroup = context.bindGroupManager.getBindGroupByName("projectionView");
+        let projectionViewBindGroup = this._context.bindGroupManager.getBindGroupByName("projectionView");
         renderPassEncoder.setBindGroup(1, projectionViewBindGroup);
 
         if (this._gBuffer.indicesBuffer) {
@@ -55,10 +59,18 @@ export class Geometry
     }
 
     //---------------------------------
+    // BIND GROUPS
+
+    public updateGeometryBindGroup()
+    {
+        this._context.bindGroupManager.updateGeometryBindGroup(this);
+    }
+
+    //---------------------------------
     // GEOMETRY
     //     init
 
-    private initCubeData(): GeometryData
+    public initCubeData(): GeometryData
     {
         let cube = new Cube();
         return cube.data;
@@ -105,7 +117,7 @@ export class Geometry
     public get gBuffer(): GeometryBuffers 
     {
         if (!this._gBuffer) {
-            this._gBuffer = new GeometryBuffers(this.context.device, this);
+            this._gBuffer = new GeometryBuffers(this._context.device, this);
         }
         return this._gBuffer;
     }

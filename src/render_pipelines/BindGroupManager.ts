@@ -17,6 +17,7 @@ export class BindGroupManager
     public pipelineLayout!: GPUPipelineLayout;
 
     private _bindGroups: Map<string, GPUBindGroup> = new Map();
+    private _geometryBindGroups = new Map<Geometry, GPUBindGroup>();
 
     private _viewMatrixBuffer: UniformBuffer;
     private _modelMatrixBuffer: UniformBuffer;
@@ -43,15 +44,8 @@ export class BindGroupManager
             this._diffuseColor,
             "Diffuse Color Buffer");
 
-        this._bindGroups.set('geometry', new GeometryBindGroup(device, 
-                                                       this.createGeometryGroupLayout(),
-                                                       this._modelMatrixBuffer.buffer,
-                                                       this._texture,
-                                                       this._diffuseColorBuffer.buffer).createBindGroup());
-        this._bindGroups.set('projectionView', new ProjectionBindGroup(device, 
-                                                               this.createProjectionViewGroupLayout(), 
-                                                               this._viewMatrixBuffer.buffer, 
-                                                               camera.buffer.buffer).createBindGroup());
+        this._bindGroups.set('projectionView', 
+                              this.createProjectionViewBindGroup(camera));
     }
 
     // ------------------------------------------
@@ -126,7 +120,29 @@ export class BindGroupManager
     }
 
     // ------------------------------------------
+    // CREATE BIND GROUPS
+
+    public createProjectionViewBindGroup(camera: Camera) : GPUBindGroup {
+        return new ProjectionBindGroup(this.device, 
+                                       this.createProjectionViewGroupLayout(), 
+                                       this._viewMatrixBuffer.buffer, 
+                                       camera.buffer.buffer).createBindGroup();
+    }
+
+    public createGeometryBindGroup(geometry: Geometry) : GPUBindGroup {
+        const bindGroup = new GeometryBindGroup(this.device, 
+                                     this.createGeometryGroupLayout(), 
+                                     this._modelMatrixBuffer.buffer, 
+                                     this._texture,
+                                     this._diffuseColorBuffer.buffer).createBindGroup();
+
+        this._geometryBindGroups.set(geometry, bindGroup);
+        return bindGroup;
+    }
+
+    // ------------------------------------------
     // UPDATE GEOMETRY BIND GROUP
+
     public updateGeometryBindGroup(geometry: Geometry) {
         this._modelMatrixBuffer = new UniformBuffer(this.device,
             geometry.modelMatrix,
@@ -134,11 +150,13 @@ export class BindGroupManager
 
         this._texture = geometry.texture;
 
-        this.setBindGroupByName('geometry', new GeometryBindGroup(this.device, 
-                                                    this.createGeometryGroupLayout(),
-                                                    this._modelMatrixBuffer.buffer,
-                                                    this._texture,
-                                                    this._diffuseColorBuffer.buffer).createBindGroup());
+        const bindGroup = new GeometryBindGroup(this.device, 
+                                                this.createGeometryGroupLayout(),
+                                                this._modelMatrixBuffer.buffer,
+                                                this._texture,
+                                                this._diffuseColorBuffer.buffer).createBindGroup();
+
+        this._geometryBindGroups.set(geometry, bindGroup);
     }
 
     // ------------------------------------------
@@ -171,6 +189,10 @@ export class BindGroupManager
 
     public getBindGroupByName(name: string) : GPUBindGroup {
         return this._bindGroups.get(name) as GPUBindGroup;
+    }
+
+    public getGeometryBindGroup(geometry: Geometry) : GPUBindGroup {
+        return this._geometryBindGroups.get(geometry) as GPUBindGroup;
     }
 
     // ------------------------------
