@@ -32,6 +32,7 @@ export class GeometryBindGroup implements GPUBindGroup
 
     public createBindGroup() : GPUBindGroup {
         return this._device.createBindGroup({
+            label: "Geometry Bind Group",
             layout: this._bindGroupLayout,
             entries: [
                 {
