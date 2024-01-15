@@ -1,14 +1,15 @@
-import { RenderContext } from "../../../render_pipelines/RenderContext";
-import { Geometry } from "../Geometry";
+
 import { GeometryData } from "../GeometryData";
 
 
 
-export class Quad extends Geometry 
+export class Quad
 {
-    constructor(context: RenderContext) 
+    public data: GeometryData;
+
+    constructor() 
     {
-        super(context, () => this.initData());
+        this.data = this.initData();
     }
 
     private initData(): GeometryData {
