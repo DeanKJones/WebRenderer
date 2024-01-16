@@ -5,11 +5,10 @@ import { loadImage } from '../utils/engine/image_utils';
 import { Camera } from './camera/Camera';
 
 import { Geometry } from './geometry/Geometry';
-import { Cube } from './geometry/primitives/Cube';
-import { Grid } from './geometry/editor/Grid';
 
 import { NodeGraph } from './SceneGraph';
 import { Texture2D } from './texture/Texture2D';
+import { Mat4x4 } from '../utils/math/Mat4x4';
 
 export class Scene 
 {
@@ -55,11 +54,11 @@ export class Scene
         const texture2 = await Texture2D.create(this.context.device, image2);
 
         // Geometry setup
-        const geometry = new Cube(this.context);
+        const geometry = new Geometry(this.context);
         this._geometry.push(geometry);
-        const geometry2 = new Cube(this.context);
+        const geometry2 = new Geometry(this.context);
         this._geometry.push(geometry2);
-        const geometry3 = new Cube(this.context);
+        const geometry3 = new Geometry(this.context);
         this._geometry.push(geometry3);
 
         // Create the render context
@@ -91,6 +90,16 @@ export class Scene
         this._sceneGraph.addChild(geometryNode_03);
     }
 
+    //---------------------------------
+    // RENDER
+    public draw(renderPassEncoder: GPURenderPassEncoder, pipeline: GPURenderPipeline) 
+    {
+        for (let geometry of this._geometry) {
+            geometry.draw(renderPassEncoder, pipeline);
+        }
+    }
+
+
 
     //---------------------------------
     // GETTERS
@@ -111,11 +120,20 @@ export class Scene
         return this._geometry;
     }
 
+    public getGeometryByIndex(index: number): Geometry {
+        return this._geometry[index];
+    }
+
 
     //---------------------------------
     // SETTERS
 
     public setSceneRenderContextByIndex(context: RenderContext, index: number): void {
         this._renderContexts[index] = context;
+    }
+
+    public setGeometryTransformByIndex(transform: Mat4x4, index: number) 
+    {
+        this._geometry[index].transform = transform;
     }
 }

@@ -7,7 +7,7 @@ import { Texture2D } from "./scene/texture/Texture2D";
 import { RenderContext } from "./render_pipelines/RenderContext";
 import { loadImage } from "./utils/engine/image_utils";
 
-import { Geometry } from "./scene/geometry/Geometry";
+import { Scene } from "./scene/Scene";
 
 
 let angle = 0;
@@ -38,10 +38,8 @@ async function init() {
 
   const context = new RenderContext(device, camera, canvas, texture);
 
-  // Geometry setup
-  const geometry:  Geometry = new Geometry(context);
-  const geometry2: Geometry = new Geometry(context);
-  const geometry3: Geometry = new Geometry(context);
+  // Scene setup
+  const scene = new Scene(context);
   
   const draw = () => 
   {
@@ -69,26 +67,22 @@ async function init() {
     const unlitPipeline = new UnlitRenderPipeline(context);
     const pipeline = unlitPipeline.pipeline;
 
-    // DRAW HERE
+    // Update Angle
     angle += 0.02;
-    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(0.5, -0.5, 0), Mat4x4.rotationX(angle*0.5));
+
+    for (let i = 0; i < scene.getSceneGeometry().length; i++) 
+    {
+      // Create transform matrix
+    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(-0.75 + i * 0.75, -0.5 + i * 0.5, 0), Mat4x4.rotationX(angle*0.5));
     matrixTransforms = Mat4x4.multiply(matrixTransforms, Mat4x4.scale(0.5, 0.5, 0.5));
-    geometry.transform = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle*0.5));
+    matrixTransforms = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle*0.5));
+    // Update the geometry
+    scene.setGeometryTransformByIndex(matrixTransforms, i);
+    scene.getGeometryByIndex(i).updateGeometryBindGroup();
+    }
 
-    let matrixTransforms2 = Mat4x4.multiply(Mat4x4.translation(0, 0.5, 0), Mat4x4.rotationX(angle));
-    matrixTransforms2 = Mat4x4.multiply(matrixTransforms2, Mat4x4.scale(0.6, 0.6, 0.6));
-    geometry2.transform = Mat4x4.multiply(matrixTransforms2, Mat4x4.rotationY(angle));
 
-    let matrixTransforms3 = Mat4x4.multiply(Mat4x4.translation(-0.5, -0.5, 0), Mat4x4.scale(0.3, 0.3, 0.3));
-    geometry3.transform = Mat4x4.multiply(matrixTransforms3, Mat4x4.rotationY(-angle));
-
-    geometry.updateGeometryBindGroup();
-    geometry2.updateGeometryBindGroup();
-    geometry3.updateGeometryBindGroup();
-
-    geometry.draw(renderPassEncoder, pipeline);
-    geometry2.draw(renderPassEncoder, pipeline);
-    geometry3.draw(renderPassEncoder, pipeline);
+    scene.draw(renderPassEncoder, pipeline);
 
     renderPassEncoder.end();
     device.queue.submit([
