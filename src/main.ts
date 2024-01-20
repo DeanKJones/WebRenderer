@@ -8,6 +8,7 @@ import { RenderContext } from "./render_pipelines/RenderContext";
 import { loadImage } from "./utils/engine/image_utils";
 
 import { Scene } from "./scene/Scene";
+import { Quaternion } from "./utils/math/Quaternion";
 
 
 let angle = 0;
@@ -73,9 +74,15 @@ async function init() {
     for (let i = 0; i < scene.getSceneGeometry().length; i++) 
     {
       // Create transform matrix
-    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(-0.75 + i * 0.75, -0.5 + i * 0.5, 0), Mat4x4.rotationX(angle*0.5));
-    matrixTransforms = Mat4x4.multiply(matrixTransforms, Mat4x4.scale(0.5, 0.5, 0.5));
-    matrixTransforms = Mat4x4.multiply(matrixTransforms, Mat4x4.rotationY(angle*0.5));
+    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(-0.75 + i * 0.75, 
+                                                              -0.5 + i * 0.5, 
+                                                              0), 
+                                           Mat4x4.scale(0.5, 0.5, 0.5));
+                                           
+    let transformQ = new Quaternion().fromEulerAngles(angle * 0.5, angle * 0.5, 0);
+    let transfromM = new Quaternion().quaternionToMatrix(transformQ, Mat4x4.identity());
+    matrixTransforms = Mat4x4.multiply(matrixTransforms, transfromM);
+
     // Update the geometry
     scene.setGeometryTransformByIndex(matrixTransforms, i);
     scene.getGeometryByIndex(i).updateGeometryBindGroup();

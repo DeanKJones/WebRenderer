@@ -1,10 +1,11 @@
 export class Vec3 extends Float32Array {
-    constructor(x: number = 0, y: number = 0, z: number = 0) {
+    constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 0) {
         super(3);
 
         this[0] = x;
         this[1] = y;
         this[2] = z;
+        this[3] = w;
     }
 
     public get x(): number {
@@ -31,6 +32,22 @@ export class Vec3 extends Float32Array {
         this[2] = value;
     }
 
+    public get w(): number {
+        return this[3];
+    }
+
+    public set w(value: number) {
+        this[3] = value;
+    }
+
+    public setVec3(x: number, y: number, z: number): Vec3{
+        this[0] = x;
+        this[1] = y;
+        this[2] = z;
+
+        return this;
+    }
+
     public add(v: Vec3): Vec3 {
         return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z);
     }
@@ -54,6 +71,23 @@ export class Vec3 extends Float32Array {
 
     public dot(v: Vec3): number {
         return this.x * v.x + this.y * v.y + this.z * v.z;
+    }
+
+    /**
+     * Scales the current Vector3 object by a scalar, a magnitude. The
+     * Vector3 object's x, y, and z elements are multiplied by the scalar
+     * number specified in the parameter. For example, if the vector is
+     * scaled by ten, the result is a vector that is ten times longer. The
+     * scalar can also change the direction of the vector. Multiplying the
+     * vector by a negative number reverses its direction.
+     *
+     * @param s A multiplier (scalar) used to scale a Vector3 object.
+     */
+    public scaleBy(s: number): Vec3 {
+        this.x *= s;
+        this.y *= s;
+        this.z *= s;
+        return this;
     }
 
     public scaleAndAdd(scale: number, addVec: Vec3): Vec3 {
