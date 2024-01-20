@@ -81,7 +81,7 @@ async function init() {
     scene.getGeometryByIndex(i).updateGeometryBindGroup();
     }
 
-
+    camera.update();
     scene.draw(renderPassEncoder, pipeline);
 
     renderPassEncoder.end();
