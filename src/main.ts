@@ -69,7 +69,7 @@ async function init() {
     const pipeline = unlitPipeline.pipeline;
 
     // Update Angle
-    angle += 0.02;
+    angle += 0.5;
 
     for (let i = 0; i < scene.getSceneGeometry().length; i++) 
     {
@@ -79,7 +79,9 @@ async function init() {
                                                               0), 
                                            Mat4x4.scale(0.5, 0.5, 0.5));
                                            
-    let transformQ = new Quaternion().fromEulerAngles(angle * 0.5, angle * 0.5, 0);
+    let transformQ = new Quaternion().fromEulerAngles((i * 0.5) * (angle * 0.5),
+                                                      (angle * 0.5), 
+                                                      0);
     let transfromM = new Quaternion().quaternionToMatrix(transformQ, Mat4x4.identity());
     matrixTransforms = Mat4x4.multiply(matrixTransforms, transfromM);
 
