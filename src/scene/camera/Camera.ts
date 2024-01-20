@@ -9,9 +9,9 @@ export class Camera
 {
     public buffer: UniformBuffer;
 
-    private _position: Vec3 = new Vec3(0, 0, -3);
     private _target: Vec3 = new Vec3(0, 0, 0);
-
+    
+    private _position: Vec3 = new Vec3(0, 0, -3);
     private _forward: Vec3 = new Vec3(0, 0, 1);
     private _right: Vec3 = new Vec3(1, 0, 0);
     private _up: Vec3 = new Vec3(0, 1, 0);
@@ -44,15 +44,16 @@ export class Camera
     public update() 
     {
         let moved: boolean = false;
-        let delta: Vec2 = new Vec2(0, 0);
+
+        let mousePos: Vec2 = this._inputManager.getMousePosition();
+        let delta = mousePos.subtract(this._lastMousePos).multiply(0.0002);
+        this._lastMousePos = mousePos;
 
         // Mouse movement
         // This is the spacebar, wow scuffed
-        if (this._inputManager.isKeyPressed(' ')) // Spacebar
+        if (!this._inputManager.isKeyPressed(' ')) // Spacebar
         {
-            let mousePos: Vec2 = this._inputManager.getMousePosition();
-            delta = mousePos.subtract(this._lastMousePos).multiply(0.0002);
-            this._lastMousePos = mousePos;
+            delta = new Vec2(0.0, 0.0);
         }
 
         if (this._inputManager.isKeyPressed('w')) {
@@ -82,7 +83,7 @@ export class Camera
 
         // Rotation current not working.
         // TODO NEED TO FIX THIS
-        if (delta.x != 0 || delta.y != 0) 
+        if (delta.x != 0.0 || delta.y != 0.0) 
         {
             let pitchDelta = this._rotationSpeed * delta.y;
             let yawDelta = this._rotationSpeed * delta.x;
@@ -93,7 +94,7 @@ export class Camera
             let rotation = Mat4x4.multiply(pitchMatrix, yawMatrix);
 
             this._forward = Mat4x4.multiplyVec3(rotation, this._forward);
-            this._right = Vec3.cross(this._forward, this._up);
+            this._right = Vec3.cross(this._up, this._forward);
 
             moved = true;
         }
