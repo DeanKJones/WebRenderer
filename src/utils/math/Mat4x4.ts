@@ -1,4 +1,4 @@
-import { MathUtil } from "./MathUtil";
+import { DEGREES_TO_RADIANS } from "./MathUtil";
 import { Vec3 } from "./Vec3";
 
 export class Mat4x4 extends Float32Array {
@@ -168,10 +168,10 @@ export class Mat4x4 extends Float32Array {
 
     public static perspective(fov: number, aspect: number, near: number, far: number): Mat4x4 {
 
-        const r = MathUtil.toRadians(fov);
+        fov *= DEGREES_TO_RADIANS;
 
-        const r0c0 = 1 / (aspect * Math.tan(r / 2));
-        const r1c1 = 1 / Math.tan(r / 2);
+        const r0c0 = 1 / (aspect * Math.tan(fov / 2));
+        const r1c1 = 1 / Math.tan(fov / 2);
 
         const r2c2 = -far / (near - far);
         const r3c2 = (near * far) / (near - far);
