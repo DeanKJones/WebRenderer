@@ -3,7 +3,6 @@ import { UniformBuffer } from "../../render_pipelines/uniform_buffers/UniformBuf
 import { Vec3 } from "../../utils/math/Vec3";
 import { InputManager } from "../../utils/InputManager";
 import { Vec2 } from "../../utils/math/Vec2";
-import { Quaternion } from "../../utils/math/Quaternion";
 
 export class Camera
 {
