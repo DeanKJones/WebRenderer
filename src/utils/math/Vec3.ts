@@ -56,6 +56,20 @@ export class Vec3 extends Float32Array {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }
 
+    public scaleAndAdd(scale: number, addVec: Vec3): Vec3 {
+        this[0] += scale * addVec[0];
+        this[1] += scale * addVec[1];
+        this[2] += scale * addVec[2];
+        return this;
+    }
+
+    public scaleAndSubtract(scale: number, addVec: Vec3): Vec3 {
+        this[0] -= scale * addVec[0];
+        this[1] -= scale * addVec[1];
+        this[2] -= scale * addVec[2];
+        return this;
+    }
+
     public static cross(v1: Vec3, v2: Vec3): Vec3 {
         const x = v1.y * v2.z - v1.z * v2.y;
         const y = v1.z * v2.x - v1.x * v2.z;
