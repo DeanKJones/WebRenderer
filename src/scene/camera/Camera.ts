@@ -1,6 +1,9 @@
 import { Mat4x4 } from "../../utils/math/Mat4x4";
 import { UniformBuffer } from "../../render_pipelines/uniform_buffers/UniformBuffer";
 import { Vec3 } from "../../utils/math/Vec3";
+import { InputManager } from "../../utils/InputManager";
+import { Vec2 } from "../../utils/math/Vec2";
+import { Quaternion } from "../../utils/math/Quaternion";
 
 export class Camera
 {
@@ -8,6 +11,9 @@ export class Camera
 
     private _position: Vec3 = new Vec3(0, 0, -3);
     private _target: Vec3 = new Vec3(0, 0, 0);
+
+    private _forward: Vec3 = new Vec3(0, 0, 1);
+    private _right: Vec3 = new Vec3(1, 0, 0);
     private _up: Vec3 = new Vec3(0, 1, 0);
 
     private _aspect: number;        // Aspect ratio
@@ -18,7 +24,111 @@ export class Camera
     private _isPerspective: boolean = true;
     private _orthoScale: number = 2;
 
+    private _view: Mat4x4 = Mat4x4.identity();
     private _projectionView: Mat4x4 = Mat4x4.identity();
+
+    private _inputManager: InputManager = new InputManager();
+    private _speed: number = 0.1;
+    private _rotationSpeed: number = 0.05;
+    private _lastMousePos: Vec2 = new Vec2(0, 0);
+
+    //---------------------------------------------
+
+    constructor(device: GPUDevice, canvas: HTMLCanvasElement)
+    {
+        this.buffer = new UniformBuffer(device, this._projectionView, "Camera Buffer");
+        this._aspect = (canvas.width / canvas.height);
+        this.updateView();
+    }
+
+    public update() 
+    {
+        let moved: boolean = false;
+        let delta: Vec2 = new Vec2(0, 0);
+
+        // Mouse movement
+        // This is the spacebar, wow scuffed
+        if (this._inputManager.isKeyPressed(' ')) // Spacebar
+        {
+            let mousePos: Vec2 = this._inputManager.getMousePosition();
+            delta = mousePos.subtract(this._lastMousePos).multiply(0.0002);
+            this._lastMousePos = mousePos;
+        }
+
+        if (this._inputManager.isKeyPressed('w')) {
+            this._position.scaleAndAdd(this._speed, this._forward);
+            moved = true;
+        }
+        if (this._inputManager.isKeyPressed('s')) {
+            this._position.scaleAndSubtract(this._speed, this._forward);
+            moved = true;
+        }
+        if (this._inputManager.isKeyPressed('a')) {
+            this._position.scaleAndSubtract(this._speed, this._right);
+            moved = true;
+        }
+        if (this._inputManager.isKeyPressed('d')) {
+            this._position.scaleAndAdd(this._speed, this._right);
+            moved = true;
+        }
+        if (this._inputManager.isKeyPressed('q')) {
+            this._position.scaleAndSubtract(this._speed, this._up);
+            moved = true;
+        }
+        if (this._inputManager.isKeyPressed('e')) {
+            this._position.scaleAndAdd(this._speed, this._up);
+            moved = true;
+        }
+
+        // Rotation current not working.
+        // TODO NEED TO FIX THIS
+        if (delta.x != 0 || delta.y != 0) 
+        {
+            let pitchDelta = this._rotationSpeed * delta.y;
+            let yawDelta = this._rotationSpeed * delta.x;
+
+            let pitchMatrix = Mat4x4.rotationAxis(this._right, pitchDelta);
+            let yawMatrix = Mat4x4.rotationAxis(this._up, yawDelta);
+
+            let rotation = Mat4x4.multiply(pitchMatrix, yawMatrix);
+
+            this._forward = Mat4x4.multiplyVec3(rotation, this._forward);
+            this._right = Vec3.cross(this._forward, this._up);
+
+            moved = true;
+        }
+
+
+        if (moved)
+            this.updateView();
+            this.updateProjectionView();
+    }
+
+    //---------------------------------------------
+
+    private updateView()
+    {
+        this._view = Mat4x4.view(this._position, 
+                                 this._position.add(this._forward), 
+                                 this._up);
+        // Here we can add functionality to look at a target
+    }
+
+    private updateProjectionView() 
+    {
+        let projection: Mat4x4;
+
+        if (this._isPerspective) {
+            projection = Mat4x4.perspective(this._fov, this._aspect, this._near, this._far);
+        } 
+        else {
+            projection = Mat4x4.orthographic(-(this._orthoScale), (this._orthoScale),
+                                             -(this._orthoScale), (this._orthoScale),
+                                               this._near, this._far);
+        }
+        this._projectionView = Mat4x4.multiply(projection, this._view);
+        this.buffer.update(this._projectionView);
+    }
 
     //---------------------------------------------
     //  Getters
@@ -83,30 +193,4 @@ export class Camera
         this.updateProjectionView();
     }
 
-    //---------------------------------------------
-
-    constructor(device: GPUDevice, canvas: HTMLCanvasElement)
-    {
-        this.buffer = new UniformBuffer(device, this._projectionView, "Camera Buffer");
-        this._aspect = (canvas.width / canvas.height);
-        this.updateProjectionView();
-    }
-
-    //---------------------------------------------
-
-    private updateProjectionView() {
-        let view = Mat4x4.view(this._position, this._target, this._up);
-        let projection: Mat4x4;
-
-        if (this._isPerspective) {
-            projection = Mat4x4.perspective(this._fov, this._aspect, this._near, this._far);
-        } 
-        else {
-            projection = Mat4x4.orthographic(-(this._orthoScale), (this._orthoScale),
-                                             -(this._orthoScale), (this._orthoScale),
-                                               this._near, this._far);
-        }
-        this._projectionView = Mat4x4.multiply(projection, view);
-        this.buffer.update(this._projectionView);
-    }
 }
