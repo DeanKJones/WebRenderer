@@ -3,11 +3,12 @@ import { Vec3 } from "./Vec3";
 
 export class Mat4x4 extends Float32Array {
     constructor() {
-        super([
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
+        super(16);
+        this.set([
+            1, 0, 0, 0, // Row 1
+            0, 1, 0, 0, // Row 2
+            0, 0, 1, 0, // Row 3
+            0, 0, 0, 1  // Row 4
         ]);
     }
 
@@ -43,6 +44,37 @@ export class Mat4x4 extends Float32Array {
 
         return m;
     }
+
+    public static multiplyVec3(m: Mat4x4, v: Vec3) : Vec3
+    {
+        const x = v.x * m[0] + v.y * m[4] + v.z * m[8] + m[12];
+        const y = v.x * m[1] + v.y * m[5] + v.z * m[9] + m[13];
+        const z = v.x * m[2] + v.y * m[6] + v.z * m[10] + m[14];
+
+        return new Vec3(x, y, z);
+    }
+
+    public static rotationAxis(axis: Vec3, angle: number): Mat4x4 
+    {
+        const s = Math.sin(angle);
+        const c = Math.cos(angle);
+        const t = 1 - c;
+
+        const x = axis.x;
+        const y = axis.y;
+        const z = axis.z;
+
+        const m = new Mat4x4();
+        m.set([
+            t * x * x + c, t * x * y - s * z, t * x * z + s * y, 0,
+            t * x * y + s * z, t * y * y + c, t * y * z - s * x, 0,
+            t * x * z - s * y, t * y * z + s * x, t * z * z + c, 0,
+            0,                 0,                 0,             1
+        ]);
+
+        return m;
+    }
+
 
     public static identity(): Mat4x4 {
         return new Mat4x4();
