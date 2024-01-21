@@ -9,6 +9,7 @@ import { Geometry } from './geometry/Geometry';
 import { NodeGraph } from './SceneGraph';
 import { Texture2D } from './texture/Texture2D';
 import { Mat4x4 } from '../utils/math/Mat4x4';
+import { loadFile } from '../utils/engine/geometry_utils';
 
 export class Scene 
 {
@@ -37,7 +38,7 @@ export class Scene
         this._geometryBuffers = [];
         this._geometry = [];
 
-        this.createCubeScene();
+        this.createLegoScene();
     }
 
     //---------------------------------
@@ -67,17 +68,13 @@ export class Scene
         const geometryBuffers = new GeometryBuffers(this.context.device, geometry);
 
         const geometryNode_02 = new NodeGraph();
-        const context2 = new RenderContext(this.context.device, this._camera, this.context.canvas, texture2);
         const geometryBuffers2 = new GeometryBuffers(this.context.device, geometry2);
 
         const geometryNode_03 = new NodeGraph();
-        const context3 = new RenderContext(this.context.device, this._camera, this.context.canvas, texture2);
         const geometryBuffers3 = new GeometryBuffers(this.context.device, geometry3);
 
         // Add to the list of render contexts
         this._renderContexts.push(context);
-        this._renderContexts.push(context2);
-        this._renderContexts.push(context3);
 
         // Add to the list of geometry buffers
         this._geometryBuffers.push(geometryBuffers);
@@ -88,6 +85,25 @@ export class Scene
         this._sceneGraph.addChild(geometryNode_01);
         this._sceneGraph.addChild(geometryNode_02);
         this._sceneGraph.addChild(geometryNode_03);
+    }
+
+    //---------------------------------
+    // Create Lego Scene
+    private async createLegoScene(): Promise<void> 
+    {
+        // Scene setup
+        this._camera = new Camera(this.context.device, this.context.canvas);
+
+        // Mesh setup
+        const fileString = await loadFile("assets/geometry/gonk.obj");
+
+        // Geometry setup
+        const geometry = new Geometry(this.context, fileString);
+        this._geometry.push(geometry);
+        const geometry2 = new Geometry(this.context, fileString);
+        this._geometry.push(geometry2);
+        const geometry3 = new Geometry(this.context, fileString);
+        this._geometry.push(geometry3);
     }
 
     //---------------------------------
