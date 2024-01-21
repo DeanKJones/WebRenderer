@@ -10,7 +10,7 @@ export class Camera
 
     private _target: Vec3 = new Vec3(0, 0, 0);
     
-    private _position: Vec3 = new Vec3(0, 0, -3);
+    private _position: Vec3 = new Vec3(0, 1, -8.5);
     private _forward: Vec3 = new Vec3(0, 0, 1);
     private _right: Vec3 = new Vec3(1, 0, 0);
     private _up: Vec3 = new Vec3(0, 1, 0);
