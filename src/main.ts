@@ -74,13 +74,13 @@ async function init() {
     for (let i = 0; i < scene.getSceneGeometry().length; i++) 
     {
       // Create transform matrix
-    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(-0.75 + i * 0.75, 
-                                                              -0.5 + i * 0.5, 
-                                                              0), 
+    let matrixTransforms = Mat4x4.multiply(Mat4x4.translation(-3 + i * 3, 
+                                                              0,
+                                                              0),
                                            Mat4x4.scale(0.5, 0.5, 0.5));
                                            
-    let transformQ = new Quaternion().fromEulerAngles((i * 0.5) * (angle * 0.5),
-                                                      (angle * 0.5), 
+    let transformQ = new Quaternion().fromEulerAngles(0,
+                                                     (i + 1 * 0.5) * (angle * 0.05), 
                                                       0);
     let transfromM = new Quaternion().quaternionToMatrix(transformQ, Mat4x4.identity());
     matrixTransforms = Mat4x4.multiply(matrixTransforms, transfromM);
