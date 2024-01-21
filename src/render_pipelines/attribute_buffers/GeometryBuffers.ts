@@ -12,9 +12,10 @@ export class GeometryBuffers
 
     constructor(device: GPUDevice, geometry: Geometry) 
     {
-        // Get the geometry data
-        // TODO - replace this with the geometry data not create a new one here
-        let geometryData = geometry.initCubeData();
+        // Fix import of value 
+        // Load
+        let geometryData = geometry.initOBJData();
+
 
         // POSITIONS
         this.positionsBuffer = device.createBuffer({
@@ -31,6 +32,10 @@ export class GeometryBuffers
 
         this.vertexCount = geometryData.positions.length / 3; // (xyz)
 
+        // Adjust indices
+        for (let i = 0; i < geometryData.indices.length; i++) {
+            geometryData.indices[i]--;
+        }
 
         // INDICES
         if (geometryData.indices.length > 0) 
