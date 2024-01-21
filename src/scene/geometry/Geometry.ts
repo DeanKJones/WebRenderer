@@ -8,6 +8,7 @@ import { RenderContext } from "../../render_pipelines/RenderContext";
 import { GeometryData } from "./GeometryData";
 import { Cube } from "./primitives/Cube";
 import { Grid } from "./editor/Grid";
+import { MeshOBJ } from "./import/ImportOBJ";
 
 export class Geometry 
 {
@@ -19,10 +20,12 @@ export class Geometry
     private _gridData?: GeometryData;
 
     private _context: RenderContext;
+    private _fileString: string;
 
-    constructor(context: RenderContext)
+    constructor(context: RenderContext, fileString: string = "")
     {
         this._context = context;
+        this._fileString = fileString;
 
         this._modelMatrix = Mat4x4.identity();
         this._texture = context.texture;
@@ -82,6 +85,15 @@ export class Geometry
         return grid.data;
     }
 
+    public initOBJData(): GeometryData
+    {
+        if (this._fileString.length == 0) {
+            throw new Error("File string is empty");
+        }
+        let obj = new MeshOBJ(this._fileString);
+        return obj.data;
+    }
+
     //---------------------------------
     // GEOMETRY
     //   create
@@ -111,6 +123,11 @@ export class Geometry
         this._modelMatrix = modelMatrix;
     }
 
+    public set fileString(fileString: string)
+    {
+        this._fileString = fileString;
+    } 
+
     //---------------------------------
     // GETTERS
 
@@ -125,6 +142,11 @@ export class Geometry
     public get transform(): Mat4x4
     {
         return this._modelMatrix;
+    }
+
+    public get fileString(): string
+    {
+        return this._fileString;
     }
 
     public get texture(): Texture2D
