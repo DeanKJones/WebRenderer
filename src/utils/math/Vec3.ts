@@ -1,4 +1,5 @@
 export class Vec3 extends Float32Array {
+
     constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 0) {
         super(3);
 
@@ -50,6 +51,13 @@ export class Vec3 extends Float32Array {
 
     public add(v: Vec3): Vec3 {
         return new Vec3(this.x + v.x, this.y + v.y, this.z + v.z);
+    }
+
+    public sub(v0: Vec3) {
+        this[0] -= v0[0];
+        this[1] -= v0[1];
+        this[2] -= v0[2];
+        return this;
     }
 
     public static subtract(v1: Vec3, v2: Vec3): Vec3 {
@@ -111,6 +119,13 @@ export class Vec3 extends Float32Array {
         return new Vec3(x, y, z);
     }
 
+    public cross(v: Vec3): Vec3 {
+        const x = this.y * v.z - this.z * v.y;
+        const y = this.z * v.x - this.x * v.z;
+        const z = this.x * v.y - this.y * v.x;
+        return new Vec3(x, y, z);
+    }
+
     public calculateLength(): number {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }
@@ -118,6 +133,14 @@ export class Vec3 extends Float32Array {
     public static normalize(v: Vec3): Vec3 {
         const length = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
         return new Vec3(v.x / length, v.y / length, v.z / length);
+    }
+
+    public normalize(): Vec3 {
+        const length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        this.x /= length;
+        this.y /= length;
+        this.z /= length;
+        return this;
     }
 
     public static distance(v1: Vec3, v2: Vec3): number {
